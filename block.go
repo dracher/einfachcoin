@@ -3,8 +3,11 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/gob"
 	"strconv"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Block is
@@ -34,4 +37,31 @@ func NewBlock(data string, prevBlockHash []byte) *Block {
 	block.Nonce = nonce
 
 	return block
+}
+
+// Serialize is
+func (b *Block) Serialize() []byte {
+	var result bytes.Buffer
+	encoder := gob.NewEncoder(&result)
+
+	err := encoder.Encode(b)
+	if err != nil {
+		log.Error(err)
+	}
+	log.Debug(result.String())
+
+	return result.Bytes()
+}
+
+// Deserialize is
+func Deserialize(d []byte) *Block {
+	var block Block
+
+	decoder := gob.NewDecoder(bytes.NewReader(d))
+	err := decoder.Decode(&block)
+	if err != nil {
+		log.Error(err)
+	}
+
+	return &block
 }

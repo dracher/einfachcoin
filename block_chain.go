@@ -1,5 +1,11 @@
 package main
 
+import (
+	"fmt"
+
+	bolt "github.com/etcd-io/bbolt"
+)
+
 // Blockchain is
 type Blockchain struct {
 	blocks []*Block
@@ -19,5 +25,10 @@ func NewGenesisBlock() *Block {
 
 // NewBlockchain is
 func NewBlockchain() *Blockchain {
+	var tip []byte
+	_, err := bolt.Open(dbFile, 0600, nil)
+
+	fmt.Println(err)
+
 	return &Blockchain{[]*Block{NewGenesisBlock()}}
 }
